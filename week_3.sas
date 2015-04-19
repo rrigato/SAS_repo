@@ -197,7 +197,17 @@ data first;
    run;
    proc reg data = problem3_18sqrt;
    		model num_hours = lot_sq;
-		output out = prob3 r = res;
+		output out = prob3 r = res p=fitted;
+	run;
+
+	proc gplot data = prob3;
+		plot res*fitted;
+	run;
+	proc univariate normal plot data = prob3;
+		var res;
+	run;
+	proc reg data = problem3_18;
+		model num_hours = lot_size;
 	run;
 quit;
 
