@@ -89,3 +89,42 @@ data takehome2;
 	gp12product = gp1*gp2;
 	drop Grade1 Grade2;
 run;
+proc gplot data=takehome2;
+	plot score*gp12product ;
+run;
+
+proc reg data = takehome2;
+	model score = gp12product;
+	test gp12product;
+run; 
+data problem2;
+	set takehome;
+	loggp1 = log(gp1);
+	loggp2= log(gp2);
+	gp1sqr = gp1*gp1;
+	gp2sqr = gp2*gp2;
+	gp1cube = gp1*gp1*gp1;
+	gp2cube = gp2*gp2*gp2;
+	gp12ratio = gp1/gp2;
+	gp12product = gp1*gp2;
+	gp21ratio = gp2/gp1;
+	drop Grade1 Grade2;
+run;
+
+proc corr data = problem2;
+run;
+
+proc reg data = problem2;
+	model score = gp1 gp2 loggp1 loggp2 gp1sqr gp2sqr 
+	gp1cube gp2cube gp12ratio gp12product gp21ratio / selection=adjrsq;
+run;
+
+proc reg data = problem2;
+	model score = gp1 gp2 loggp1 loggp2 gp1sqr gp2sqr gp1cube 
+	gp2cube gp12ratio gp12product gp21ratio / selection=cp;
+run;
+
+proc reg data = problem2;
+	model score = gp1 gp2 loggp2 gp1sqr gp2sqr gp12ratio gp21ratio;
+run;
+ods rtf close;
