@@ -550,17 +550,186 @@ data final2;
 		marriednumdep = married*numdep; *.15;
 		smsanumdep = smsa*numdep; *nope;
 		femalenumdep = female*numdep; *yup -.30;
-		smsafemalenumdep = female*numdep*smsa; * -.22;
-		femaleconstruc = female*construc; 
-		femalendurman = female*ndurman;
-		femaletrcommpu = female*trcommpu; 
-		femaletrade = female*trade;
-		femaleservices = female*services;
-		femaleprofserv = female * profserv;
-		femaleprofocc = female*profocc;
-		femaleclerocc = female*clerocc;
-		femaleservocc = female*servocc;
 
+
+
+
+		tenureconstruc = tenure*construc; 
+		tenurendurman = tenure*ndurman;
+		tenuretrcommpu = tenure*trcommpu; 
+		tenuretrade = tenure*trade;
+		tenureservices = tenure*services;
+		tenureprofserv = tenure * profserv;
+		tenureprofocc = tenure*profocc;
+		tenureclerocc = tenure*clerocc;
+		tenureservocc = tenure*servocc;
+		lwage3 = lwage*lwage*lwage;
 run;
 proc corr data = final2;
 run;
+
+proc reg data = final2;
+	model lwage =  educ exper tenure nonwhite female married numdep smsa northcen
+		south west construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc  expersq tenursq
+		/*interactions that were created*/
+		tenureconstruc
+		tenurendurman 
+		tenuretrcommpu 
+		tenuretrade 
+		tenureservices
+		tenureprofserv 
+		tenureprofocc
+		tenureclerocc
+		tenureservocc 
+		femalenumdep 
+		smsafemalenumdep
+		educnorthcen 
+		educsouth  
+		educwest 
+		nonwhitetenure 
+		nonwhiteexper
+		marriednumdep 
+		smsanumdep 
+	
+		
+;
+	output out = myout r = res ;
+run;
+
+proc reg data = final2;
+	model lwage =  educ exper tenure nonwhite female married numdep smsa northcen
+		south west construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc  expersq tenursq
+		/*interactions that were created*/
+		tenureconstruc
+		tenurendurman 
+		tenuretrcommpu 
+		tenuretrade 
+		tenureservices
+		tenureprofserv 
+		tenureprofocc
+		tenureclerocc
+		tenureservocc 
+		femalenumdep 
+		smsafemalenumdep
+		educnorthcen 
+		educsouth  
+		educwest 
+		nonwhitetenure 
+		nonwhiteexper
+		marriednumdep 
+		smsanumdep 
+		/selection=cp
+;
+	output out = myout r = res;
+run;
+data myres;
+	set myout;
+	res2 = res*res;
+run;
+proc reg data = myres;
+	model res2 =  educ exper tenure nonwhite female married numdep smsa northcen
+		south west construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc  expersq tenursq
+		/*interactions that were created*/
+		tenureconstruc
+		tenurendurman 
+		tenuretrcommpu 
+		tenuretrade 
+		tenureservices
+		tenureprofserv 
+		tenureprofocc
+		tenureclerocc
+		tenureservocc 
+		femalenumdep 
+		smsafemalenumdep
+		educnorthcen 
+		educsouth  
+		educwest 
+		nonwhitetenure 
+		nonwhiteexper
+		marriednumdep 
+		smsanumdep 
+	;
+run;
+
+proc univariate normal plot data = myout;
+	var res;
+run;
+
+
+
+proc reg data = final2;
+	model lwage =  educ exper tenure nonwhite female married numdep smsa northcen
+		south west construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc  expersq tenursq
+		/*interactions that were created*/
+		tenureconstruc
+		tenurendurman 
+		tenuretrcommpu 
+		tenuretrade 
+		tenureservices
+		tenureprofserv 
+		tenureprofocc
+		tenureclerocc
+		tenureservocc 
+		femalenumdep 
+		smsafemalenumdep
+		educnorthcen 
+		educsouth  
+		educwest 
+		nonwhitetenure 
+		nonwhiteexper
+		marriednumdep 
+		smsanumdep 
+	
+		/selection=stepwise
+;
+	output out = myout4 r = res ;
+run;
+
+
+proc reg data = final2;
+	model lwage =  educ exper tenure nonwhite female married numdep smsa northcen
+		south west construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc  expersq tenursq
+		/*interactions that were created*/
+		tenureconstruc
+		tenurendurman 
+		tenuretrcommpu 
+		tenuretrade 
+		tenureservices
+		tenureprofserv 
+		tenureprofocc
+		tenureclerocc
+		tenureservocc 
+		femalenumdep 
+
+		educnorthcen 
+		educsouth  
+		educwest 
+		nonwhitetenure 
+		nonwhiteexper
+		marriednumdep 
+		smsanumdep 
+	
+		/selection=cp
+;
+	output out = myout5 r = res ;
+run;
+*mallos cp;
+proc reg data = final2;
+	model lwage = educ exper tenure female numdep smsa ndurman trade services profocc 
+servocc expersq tenursq tenureconstruc tenuretrade tenureservices tenureprofserv tenureprofocc educwest marriednumdep;
+run;
+*stepwise selection;
+proc reg data = final2;
+	model lwage = tenureprofocc educ female trade servocc services smsa married tenure profocc tenursq
+		educwest tenureclerocc tenureconstruc clerocc tenureservocc;
+run;
+
+
+	
+
+quit;
