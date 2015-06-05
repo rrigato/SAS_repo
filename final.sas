@@ -784,3 +784,35 @@ proc reg data = final2;
 		educwest;
 run;
 quit;
+
+
+
+
+
+
+*final model;
+proc reg data = final2;
+	model lwage = educ exper tenure female numdep smsa  expersq 
+tenursq  marriednumdep
+		married
+		construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc
+ 		tenureconstruc
+		tenurendurman 
+		tenuretrcommpu 
+		tenuretrade 
+		tenureservices
+		tenureprofserv 
+		tenureprofocc
+		tenureclerocc
+		tenureservocc 
+;
+	output out = myout7 r = res rstudent=studentized_res;
+;
+run;
+
+data myout8;
+	set myout7;
+	if studentized_res >2 | studentized_res<-2 then dummy = 1;
+	else dummy=0;
+run;
