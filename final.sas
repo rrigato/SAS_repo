@@ -564,6 +564,10 @@ data final2;
 		tenureclerocc = tenure*clerocc;
 		tenureservocc = tenure*servocc;
 		lwage3 = lwage*lwage*lwage;
+		
+		tenurewest = tenure*west;
+		tenuresouth = tenure*south;
+		tenurenorthcen = tenure*northcen;
 run;
 proc corr data = final2;
 run;
@@ -730,6 +734,45 @@ proc reg data = final2;
 run;
 
 
-	
+proc reg data = final2;
+	model lwage =  educ exper tenure nonwhite female married numdep smsa northcen
+		south west construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc  expersq tenursq / selection=adjrsq;
+run;
 
+
+
+
+proc reg data = final2;
+	model lwage =  educ female smsa married tenure  tenursq
+		educwest  		tenureconstruc
+		tenurendurman 
+		tenuretrcommpu 
+		tenuretrade 
+		tenureservices
+		tenureprofserv 
+		tenureprofocc
+		tenureclerocc
+		tenureservocc 
+		;
+run;
+quit;
+
+
+proc reg data = final;
+model wage = educ exper tenure nonwhite female married numdep smsa northcen
+		south west construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc expersq tenursq;
+run;
+
+
+
+
+proc reg data = final2;
+	model lwage =  educ female trade servocc services smsa married tenure profocc tenursq
+	  clerocc 
+		educnorthcen 
+		educsouth  
+		educwest;
+run;
 quit;
