@@ -568,6 +568,8 @@ data final2;
 		tenurewest = tenure*west;
 		tenuresouth = tenure*south;
 		tenurenorthcen = tenure*northcen;
+		
+	
 run;
 proc corr data = final2;
 run;
@@ -587,7 +589,7 @@ proc reg data = final2;
 		tenureclerocc
 		tenureservocc 
 		femalenumdep 
-		smsafemalenumdep
+
 		educnorthcen 
 		educsouth  
 		educwest 
@@ -596,7 +598,7 @@ proc reg data = final2;
 		marriednumdep 
 		smsanumdep 
 	
-		
+		/selection=stepwise
 ;
 	output out = myout r = res ;
 run;
@@ -616,7 +618,7 @@ proc reg data = final2;
 		tenureclerocc
 		tenureservocc 
 		femalenumdep 
-		smsafemalenumdep
+
 		educnorthcen 
 		educsouth  
 		educwest 
@@ -742,10 +744,14 @@ run;
 
 
 
-
+*final model;
 proc reg data = final2;
-	model lwage =  educ female smsa married tenure  tenursq
-		educwest  		tenureconstruc
+	model lwage = educ exper tenure female numdep smsa  expersq 
+tenursq  marriednumdep
+		married
+		construc ndurman trcommpu trade services profserv profocc clerocc
+		servocc
+ 		tenureconstruc
 		tenurendurman 
 		tenuretrcommpu 
 		tenuretrade 
@@ -754,7 +760,9 @@ proc reg data = final2;
 		tenureprofocc
 		tenureclerocc
 		tenureservocc 
-		;
+
+
+;
 run;
 quit;
 
