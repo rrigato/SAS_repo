@@ -123,3 +123,134 @@ proc univariate  normal plot data = myout;
 	var res;
 run;
 
+
+
+
+
+
+
+
+
+
+
+
+
+/***********************************************************************************************************
+*
+*		Regression model using automatic selction techniques
+*
+*
+*
+************************************************************************************************************/
+
+
+
+
+
+
+
+
+data prob2;
+input Rows	salary	Draft	yrs_exp	played	started	citypop;
+
+cards;
+1	236000	1	2	16	16	2737000
+2	250000	6	5	16	5	2737000
+3	185000	10	4	16	16	4620000
+4	165000	13	2	6	0	4620000
+5	250000	1	3	16	4	13770000
+6	300000	11	7	16	13	13770000
+7	300000	3	7	11	8	2388000
+8	1000000	8	10	14	12	2388000
+9	225000	13	5	11	7	1307000
+10	475000	7	6	16	15	1307000
+11	425000	3	7	16	1	18120000
+12	310000	8	6	16	0	18120000
+13	287500	4	4	13	10	18120000
+14	700000	1	5	16	15	5963000
+15	1275000	2	6	16	16	5963000
+16	185000	12	5	15	1	2030000
+17	700000	1	2	2	1	2030000
+18	325000	4	6	16	1	2030000
+19	155000	3	2	7	0	6042000
+20	500000	3	2	8	6	1995000
+21	204000	2	2	13	1	1995000
+22	1366700	1	4	14	14	1995000
+23	160000	3	2	14	0	1176000
+24	1050000	1	10	16	14	1728000
+25	98000	7	2	11	0	1728000
+26	370000	3	2	10	1	3641000
+27	450000	2	6	16	8	1237000
+28	195000	2	1	1	0	1575000
+29	1500000	1	8	16	16	3001000
+30	420000	8	13	14	0	4110000
+;
+run;
+
+
+data prob22;
+	set prob2;
+	log_salary = log(salary);
+	draftInverse = 1/Draft;
+run;
+
+*problem2.A;
+proc gplot data = prob22;
+	plot salary*Draft;
+run; 
+
+proc gplot data = prob22;
+	plot log_salary*Draft;
+run; 
+
+
+*problem2.B;
+proc reg data = prob22;
+	model log_salary = draftInverse;
+	output out = myout r = res;
+run;
+
+
+
+
+*problem2.C;
+*CLM gives confidence intervals, CLI gives prediction intervals;
+proc reg data = prob22;
+	model log_salary = draftInverse / clm cli;
+	output out = myout r = res ;
+run;
+
+
+proc print data = prob22;
+run;
+
+
+data prob22D;
+	set prob22;
+	log_salary = log(salary);
+	pctStart = started/played;
+	draftInverse = 1/Draft;
+run;
+
+
+*problem 2.D;
+*selction methods:
+selection  = forward
+selction = backword
+selection = cp
+selection = stepwise
+selection=ADJRSQ
+options: slstay = .05(alpha) slentry = .05(alpha) these are for adjusting alpha values;
+
+proc reg data = prob22D;
+	model log_salary = draftInverse yrs_exp played started citypop pctStart 
+			/selection=stepwise slentry=.1 slstay=.1;
+	output out = myout2 r = res ;
+run;
+
+
+quit;
+
+quit;
+
+
