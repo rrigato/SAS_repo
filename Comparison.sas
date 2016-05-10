@@ -70,11 +70,60 @@ run;
 
 
 *A and B;
-proc glm data = f142;
+proc glm data = f142 ;
 	class Gender;
-	model SWeek = Extroversion Intelligence Age Gender / solution clm;
-	output out = myout r = res lclm=lowCI uclm=upCI;
+	model SWeek = Extroversion Intelligence Age Gender / solution clm alpha = .02;
+	output out = myout r = res lclm=lowCI uclm=upCI alpha=.02;
 run;
+
+
+data resm;
+	merge f142 myout;
+	by Person;
+run;
+
+proc gplot data = resm;
+	plot Res*Age;
+run;
+
+
+*c, D, and E;
+data f1422; set f142;
+	age_square=age*age; run;
+
+proc glm data=f1422;
+	class Gender;
+	model SWeek=Gender age age_square Intelligence
+	 Extroversion/solution;
+run;
+
+proc reg data=f1422;
+	model SWeek= age age_square Intelligence Extroversion;
+	 plot r.*p.; *test for Heteroscedasticity;
+	output out=myout lcl=lcl lclm=lclm ucl=ucl
+	uclm=uclm r=res;
+run;
+
+
+
+proc univariate data = myout normal plot;
+	var res;
+run;
+
+
+
+*White and Breusch pagan test for heteroskedasticity;
+
+proc model data = f1422 ;
+	parms beta0 beta1 beta2 beta3 beta4;
+	SWeek = beta0 + beta1*age + beta2*age_square + beta3*intelligence  + beta4*Extroversion;
+	fit SWeek / white breusch =(1 age age_square Intelligence Extroversion);
+run;
+
+quit;
+
+
+
 
 quit;
 
