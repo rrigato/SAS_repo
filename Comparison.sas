@@ -36,7 +36,7 @@ run;
 
 
 data f142;
-	input $ Person	Gender 	Age	Intelligence	Extroversion SWeek;
+	input  Person	Gender $ 	Age	Intelligence	Extroversion SWeek;
 
 cards;
 1	F	27	89	21	2625
@@ -64,12 +64,30 @@ cards;
 23	F	23	110	20	2735
 24	F	37	112	25	3600
 25	M	30	121	29	3700
+26	F	30	120	19	.
 ;
 run;
 
 
+*A and B;
 proc glm data = f142;
 	class Gender;
-	model SWeek = Extroversion Intelligence Age Gender ;
-	output out = myout r = res;
+	model SWeek = Extroversion Intelligence Age Gender / solution clm;
+	output out = myout r = res lclm=lowCI uclm=upCI;
+run;
+
+quit;
+
+
+data f143;
+input Soc $	Scout	Del	Count;
+cards;
+low-med	1	1	20
+low-med	0	1	52
+low-med	1	0	94
+low-med	0	0	229
+med-hi	1	1	15
+med-hi	0	1	12
+med-hi	1	0	252
+med-hi	0	0	126
 run;
