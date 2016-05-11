@@ -140,3 +140,107 @@ med-hi	0	1	12
 med-hi	1	0	252
 med-hi	0	0	126
 run;
+
+
+
+
+
+proc sort data = f143;
+	by soc;
+run;
+
+*test for independence;
+proc freq data = f143;
+	weight count;
+	by soc;
+	table scout * del/ chisq;
+run;
+
+*look at the chi-square statistic in the table;
+proc freq data = f143;
+	weight count;
+	table scout*del/chisq;
+run;
+
+
+
+
+proc genmod data = f143 order = data;
+class soc scout del / descending ;
+model count = soc scout del soc*scout soc*del scout*del/ dist = poi link =
+log;
+run;
+
+
+
+data f145;
+input x	y;
+cards;
+3.43	3.3
+3.45	3.62
+2.85	3.2
+3.15	3.12
+3.28	3.67
+2.8	3.15
+3.46	3.63
+2.24	2.39
+3.75	3.97
+3.34	3.16
+4	3.69
+2.79	3
+2.81	2.69
+2.73	2.7
+3.39	3.75
+4	4
+3.24	3.68
+3.27	3.1
+2.89	3
+4	4
+3.51	3.37
+2.89	3.08
+3.56	3.29
+3.87	4
+3.43	3.91
+;
+run;
+
+data prob5ax;
+	set f145;
+	gpa=x;
+	group='x';
+run;
+data prob5ay;
+set f145;
+gpa=y;
+group= 'y';
+run;
+data prob5a;
+set prob5ay prob5ax;
+run;
+
+
+proc ttest data = prob5a sides=L; /* part i*/
+class group;
+var gpa;
+run;
+proc ttest data = prob5a; /* part ii*/
+class group;
+var gpa;
+run;
+
+
+*H0: u = 3.1 Ha: u >3.1;
+proc ttest h0=3.1 data=prob5a sides=U;
+var gpa;
+run;
+
+
+proc ttest data=prob5a;
+var gpa;
+run;
+
+
+*paired t test;
+proc ttest data=prob5a;
+paired x*y;
+run;
