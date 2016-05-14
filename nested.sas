@@ -213,7 +213,7 @@ run;
 
 
 *problem2.C;
-*CLM gives confidence intervals, CLI gives prediction intervals;
+*CLM gives confidence intervals, CLI gives prediction intervals, CLB for confidence intervals for parameter estimates;
 proc reg data = prob22;
 	model log_salary = draftInverse / clb;
 	output out = myout r = res ;
@@ -331,4 +331,43 @@ proc reg data = probMiss;
 		uclm=upmean lcl=lowpred ucl=uppred;
 run;
 
+
+
+
+
+
+data sp153;
+	input obs	age $	Death	population 	smoking$;
+cards;
+1	40-44	18	656		no
+2	45-49	22	359		no
+3	50-54	19	249		no
+4	55-59	55	632		no
+5	60-64	117	1067	no
+6	65-69	170	897		no
+7	70-74	179	668		no
+8	75-79	120	361		no
+9	80+	120	274		no
+10	40-44	124	3410		yes
+11	45-49	140	2239		yes
+12	50-54	187	1851		yes
+13	55-59	514	3270		yes
+14	60-64	778	3791		yes
+15	65-69	689	2421		yes
+16	70-74	432	1195		yes
+17	80+	63	113		yes 
+;
+run;
+
+
+data two; set sp153 ;
+death="yes"; count=count; output;
+death="no"; count=population-count; output;
+drop population;
+run;
+proc genmod data=two;
+class age smoking death;
+model count= age smoking death/dist=poi link=log lrci type3 obstats
+residuals;
+run;
 quit;
